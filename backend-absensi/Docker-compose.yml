@@ -1,0 +1,54 @@
+services:
+  # RESTful API Server
+  api:
+    build: .
+    container_name: laravel-api
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - APP_ENV=production
+      - FRANKENPHP_CONFIG="worker ./public/index.php"
+    volumes:
+      - ./.env:/app/.env
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - db
+      - redis
+
+  # Queue Worker
+  worker:
+    build: .
+    container_name: laravel-worker
+    restart: always
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    volumes:
+      - ./.env:/app/.env
+    depends_on:
+      - db
+      - redis
+
+  # Database
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Cache & Queue Driver
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    restart: always
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
