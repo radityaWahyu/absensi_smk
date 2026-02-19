@@ -1,38 +1,36 @@
-FROM dunglas/frankenphp:1.3-php8.3
+FROM dunglas/frankenphp:1.1-php8.3-bookworm AS builder
 
 # Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
-    zip \
     unzip \
-    && docker-php-ext-install bcmath gd pcntl zip pdo_pgsql
-
-# Install Redis extension
-RUN pecl install redis && docker-php-ext-enable redis
+    && docker-php-ext-install pdo_pgsql zip pcntl opcache
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /app
-
-# Copy aplikasi
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Berikan izin ke folder storage
-RUN chmod -R 775 storage bootstrap/cache
+# Final Image
+FROM dunglas/frankenphp:1.1-php8.3-bookworm
+
+RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pdo_pgsql pcntl opcache
+
+WORKDIR /app
+COPY --from=builder /app /app
+
+# Konfigurasi Octane & FrankenPHP
+ENV AUTOCONF_PROGRAM=frankenphp
+ENV LARAVEL_OCTANE=1
+ENV APP_ENV=production
 
 # Expose port
-EXPOSE 8000
-EXPOSE 443
-EXPOSE 80
+EXPOSE 80 443 443/udp
 
-# File entrypoint untuk menjalankan Octane/Queue
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["entrypoint.sh"]
+# Jalankan entrypoint (bisa dicustom via docker-compose)
+CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=80"]
