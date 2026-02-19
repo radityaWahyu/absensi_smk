@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  -webkit-font-smoothing: antialiased;
+  /* Or subpixel-antialiased, smooth, none */
+  -moz-osx-font-smoothing: grayscale;
+  /* For Firefox */
+}
