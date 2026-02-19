@@ -11,11 +11,11 @@ git pull https://github.com/radityaWahyu/absensi_smk.git
 
 # 2. Build ulang image (hanya jika ada perubahan Dockerfile/code)
 echo "Step 2: Membangun image Docker (No-Cache untuk keamanan)..."
-docker-compose build --no-cache api worker
+docker compose build --no-cache api worker
 
 # 3. Jalankan container dalam mode detached
 echo "Step 3: Menjalankan container..."
-docker-compose up -d
+docker compose up -d
 
 # 4. Instalasi dependency PHP (di dalam container)
 echo "Step 4: Mengoptimalkan Composer..."
