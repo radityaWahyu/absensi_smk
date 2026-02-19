@@ -1,42 +1,38 @@
-FROM dunglas/frankenphp:1-php8.3-alpine AS builder
+FROM dunglas/frankenphp:1.3-php8.3
 
 # Install system dependencies & PHP extensions
-RUN install-php-extensions \
-    pcntl \
-    bcmath \
-    gd \
-    intl \
-    pdo_pgsql \
-    redis \
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    libzip-dev \
     zip \
-    opcache
+    unzip \
+    && docker-php-ext-install bcmath gd pcntl zip pdo_pgsql
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
 
 # Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /app
 
-# Copy source code
+# Copy aplikasi
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader
 
-# --- Production Image ---
-FROM dunglas/frankenphp:1-php8.3-alpine
+# Berikan izin ke folder storage
+RUN chmod -R 775 storage bootstrap/cache
 
-RUN install-php-extensions pdo_pgsql redis opcache pcntl
+# Expose port
+EXPOSE 8000
+EXPOSE 443
+EXPOSE 80
 
-WORKDIR /app
+# File entrypoint untuk menjalankan Octane/Queue
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Copy dari builder
-COPY --from=builder /app /app
-
-# Set permissions
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
-
-# Konfigurasi FrankenPHP
-ENV PHP_INI_SCAN_DIR=":/usr/local/etc/php/conf.d"
-COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-overrides.ini
-
-ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
+ENTRYPOINT ["entrypoint.sh"]
