@@ -7,7 +7,7 @@ echo "🚀 Memulai proses deployment..."
 
 # 1. Tarik perubahan terbaru dari repository
 echo "Step 1: Menarik kode terbaru dari Git..."
-git pull origin main
+git pull https://github.com/radityaWahyu/absensi_smk.git
 
 # 2. Build ulang image (hanya jika ada perubahan Dockerfile/code)
 echo "Step 2: Membangun image Docker (No-Cache untuk keamanan)..."
