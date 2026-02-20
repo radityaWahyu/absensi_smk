@@ -33,22 +33,22 @@ services:
     networks:
       - network_absensi_smk
 
-  queue:
-    build: .
-    container_name: laravel_queue
-    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-    restart: unless-stopped
-    depends_on:
-      - redis
-      - postgres
-    environment:
-      APP_ENV: production
-      DB_HOST: postgres
-      REDIS_HOST: redis
-    volumes:
-      - storage:/app/storage
-    networks:
-      - network_absensi_smk
+  # queue:
+  #   build: .
+  #   container_name: laravel_queue
+  #   command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #   environment:
+  #     APP_ENV: production
+  #     DB_HOST: postgres
+  #     REDIS_HOST: redis
+  #   volumes:
+  #     - storage:/app/storage
+  #   networks:
+  #     - network_absensi_smk
 
   postgres:
     image: postgres:15-alpine

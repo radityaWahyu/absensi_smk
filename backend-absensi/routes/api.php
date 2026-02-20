@@ -9,6 +9,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::get('/coba', function (Request $request) {
+    return 'berhasil berjalana';
+});
+
 
 Route::name('auth.')->prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
