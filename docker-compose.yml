@@ -66,7 +66,7 @@ services:
       POSTGRES_USER: absensi_smk
       POSTGRES_PASSWORD: Smknpur@747
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./backend-absensi/pgdata:/var/lib/postgresql/data
     networks:
       - network_absensi_smk
 
