@@ -27,7 +27,7 @@ WORKDIR /app
 # COPY . /app
 
 # Install dependency Laravel
-RUN composer install --no-dev --optimize-autoloader
+# RUN composer install --no-dev --optimize-autoloader
 
 # Permission
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
