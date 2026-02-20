@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   backend_absensi_smk:
     build: .
@@ -50,7 +48,7 @@ services:
     volumes:
       - laravel_storage:/app/storage
     networks:
-      - backend
+      - network_absensi_smk
 
   postgres:
     image: postgres:15-alpine
