@@ -3,6 +3,7 @@ FROM dunglas/frankenphp:latest
 
 # Install dependency sistem
 RUN apt-get update && apt-get install -y \
+    nano \
     git \
     unzip \
     libpq-dev \
