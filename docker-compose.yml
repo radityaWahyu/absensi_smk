@@ -1,6 +1,6 @@
 services:
   backend_absensi_smk:
-    build: .
+    image: docker build -t absensi-backend:1.0
     container_name: backend_absensi_smk
     restart: unless-stopped
     depends_on:
