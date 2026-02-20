@@ -24,7 +24,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 # Copy source code
-COPY . /app
+# COPY . /app
 
 # Install dependency Laravel
 RUN composer install --no-dev --optimize-autoloader

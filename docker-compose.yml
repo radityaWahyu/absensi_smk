@@ -11,7 +11,7 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: false
-      APP_URL: https://yourdomain.com
+      APP_URL: https://siakad.rplsmknusa.net
 
       DB_CONNECTION: pgsql
       DB_HOST: postgres
@@ -29,30 +29,37 @@ services:
 
       OCTANE_SERVER: frankenphp
     volumes:
-      - storage:/app/storage
+      - ./backend-absensi:/app
+      - ./backend-absensi/storage:/app/storage
     networks:
       - network_absensi_smk
 
-  # queue:
-  #   build: .
-  #   container_name: laravel_queue
-  #   command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - redis
-  #     - postgres
-  #   environment:
-  #     APP_ENV: production
-  #     DB_HOST: postgres
-  #     REDIS_HOST: redis
-  #   volumes:
-  #     - storage:/app/storage
-  #   networks:
-  #     - network_absensi_smk
+  queue:
+    image: absensi-backend:1.0
+    container_name: absensi_queue
+    restart: unless-stopped
+    working_dir: /app
+    command: >
+      php artisan queue:work
+      --sleep=3
+      --tries=3
+      --max-time=3600
+    volumes:
+      - ./backend-absensi:/app
+      - ./backend-absensi/storage:/app/storage
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      APP_ENV: production
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    networks:
+      - network_absensi_smk
 
   postgres:
     image: postgres:15-alpine
-    container_name: laravel_postgres
+    container_name: absensi_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: absensi_smk
@@ -65,7 +72,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: laravel_redis
+    container_name: absensi_redis
     restart: unless-stopped
     networks:
       - network_absensi_smk
