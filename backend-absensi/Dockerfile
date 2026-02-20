@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     curl \
-    && docker-php-ext-install pdo_pgsql zip opcache \
+    && docker-php-ext-install pdo_pgsql zip opcache pcntl \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
