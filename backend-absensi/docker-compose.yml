@@ -46,7 +46,7 @@ services:
       DB_HOST: postgres
       REDIS_HOST: redis
     volumes:
-      - laravel_storage:/app/storage
+      - storage:/app/storage
     networks:
       - network_absensi_smk
 
