@@ -30,7 +30,7 @@ WORKDIR /app
 # RUN composer install --no-dev --optimize-autoloader
 
 # Permission
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+RUN chown -R www-data:www-data /app
 
 # Expose port
 EXPOSE 8000
