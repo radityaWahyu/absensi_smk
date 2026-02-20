@@ -12,23 +12,7 @@ COPY . .
 RUN npm run build
 
 
-############################################
-# 2️⃣ Stage: Composer Builder
-############################################
-FROM composer:2 AS composer_builder
 
-WORKDIR /app
-
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-scripts
-
-COPY . .
-RUN composer dump-autoload --optimize
 
 
 ############################################
@@ -69,3 +53,22 @@ EXPOSE 8000
 HEALTHCHECK CMD curl --fail http://localhost:8000 || exit 1
 
 CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=auto"]
+
+
+############################################
+# 2️⃣ Stage: Composer Builder
+############################################
+FROM composer:2 AS composer_builder
+
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
+
+COPY . .
+RUN composer dump-autoload --optimize
