@@ -1,74 +1,38 @@
-############################################
-# 1️⃣ Stage: Node Builder (Build Vite Assets)
-############################################
-FROM node:20-alpine AS node_builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
-
-
-
-
-############################################
-# 3️⃣ Stage: Production Image (FrankenPHP)
-############################################
+# Gunakan image resmi FrankenPHP
 FROM dunglas/frankenphp:latest
 
-# Install system dependencies
+# Install dependency sistem
 RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
     libpq-dev \
     libzip-dev \
-    unzip \
     curl \
-    && docker-php-ext-install pdo_pgsql zip opcache pcntl \
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip pcntl \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy php.ini optimized
-COPY docker/php.ini /usr/local/etc/php/php.ini
+# Install Redis extension
+# RUN pecl install redis && docker-php-ext-enable redis
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
 WORKDIR /app
 
-# Copy Laravel app
-COPY --from=composer_builder /app /app
+# Copy source code
+COPY . /app
 
-# Copy built assets
-COPY --from=node_builder /app/public/build /app/public/build
+# Install dependency Laravel
+RUN composer install --no-dev --optimize-autoloader
 
-# Set permission
+# Permission
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
-# Switch to non-root
-USER www-data
-
+# Expose port
 EXPOSE 8000
 
-HEALTHCHECK CMD curl --fail http://localhost:8000 || exit 1
-
-CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=auto"]
-
-
-############################################
-# 2️⃣ Stage: Composer Builder
-############################################
-FROM composer:2 AS composer_builder
-
-WORKDIR /app
-
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-scripts
-
-COPY . .
-RUN composer dump-autoload --optimize
+# Jalankan Laravel Octane dengan FrankenPHP
+CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]
