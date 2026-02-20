@@ -35,5 +35,4 @@ RUN chown -R www-data:www-data /app
 # Expose port
 EXPOSE 8000
 
-# Jalankan Laravel Octane dengan FrankenPHP
-CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8000"]
+

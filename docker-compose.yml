@@ -1,8 +1,12 @@
 services:
   backend_absensi_smk:
-    image: docker build -t absensi-backend:1.0
+    image: absensi-backend:1.0
     container_name: backend_absensi_smk
+    working_dir: /app
     restart: unless-stopped
+    command: >
+      frankenphp run
+      --config /etc/frankenphp/Caddyfile
     depends_on:
       - postgres
       - redis
