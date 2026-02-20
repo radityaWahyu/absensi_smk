@@ -41,11 +41,7 @@ services:
     container_name: absensi_queue
     restart: unless-stopped
     working_dir: /app
-    command: >
-      php artisan queue:work
-      --sleep=3
-      --tries=3
-      --max-time=3600
+    command: ["php","artisan","queue:work","--sleep=3","--tries=3","--max-time=3600"]
     volumes:
       - ./backend-absensi:/app
       - ./backend-absensi/storage:/app/storage
