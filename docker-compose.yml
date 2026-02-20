@@ -50,8 +50,17 @@ services:
       - redis
     environment:
       APP_ENV: production
+      DB_CONNECTION: pgsql
       DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: absensi_smk
+      DB_USERNAME: absensi_smk
+      DB_PASSWORD: Smknpur@747
       REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CACHE_STORE: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
     networks:
       - network_absensi_smk
 
